@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>EsToDoList</title>
+</head>
+
+<body class="flex justify-center items-start pt-12 min-h-screen bg-gray-100 dark:bg-zinc-800 text-zinc-700 dark:text-lime-100">
+    <main class="flex flex-col w-full max-w-sm lg:max-w-lg p-6 bg-white dark:bg-zinc-600 border border-gray-300 rounded-lg shadow-xl">
+        <h1 class="text-center text-3xl font-bold mb-6 text-gray-200" style="font-family: 'Comic Sans MS';">
+            EsToDoList
+        </h1>
+        <!-- Área de inclusão de novas tarefas -->
+        <div class="flex mb-6 space-x-2">
+            <input
+                type="text"
+                id="nova-tarefa-input"
+                placeholder="Digite uma tarefa..."
+                class="flex-grow p-3 border border-gray-400 rounded-lg text-zinc-600 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+            <button id="adicionar-tarefa-btn"
+                class="flex-shrink-0 w-12 h-12 bg-lime-500 hover:bg-lime-700 text-white text-2x1 font-bold rounded-lg transition duration-150 ease-in-out shadow-md">+
+            </button>
+        </div>
+        <!-- Fim de inclusão de tarefas -->
+         
+    </main>
+</body>
+</html>
