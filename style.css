@@ -3,3 +3,16 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+body {
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    /* Tentativa de imitar o estilo desenhado */
+    background-color: #f0f0f0;
+}
+
+/* Classe para simular o traço em tarefas concluídas */
+.concluida .tarefa-texto {
+    text-decoration: line-through;
+    color: #9ca3af;
+    /* gray-400 */
+}

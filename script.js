@@ -67,7 +67,7 @@ function exibirTarefas(listaParaMostrar){
 
         // Criar um <li> para cada tarefa
         const item = document.createElement('li')
-        item.className = 'flex justify-between items-center p-3 border rounded-lg shadow-sm bg-gray-50 hover:bg-gray-100 transition'
+        item.className = 'flex justify-between items-center p-3 border rounded-lg shadow-sm bg-gray-50 dark:bg-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-600 transition text-zinc-900 dark:text-zinc-100'
 
         // Adicionamos a classe 'concluida' se tiver marcada
         if (tarefa.concluida) {
