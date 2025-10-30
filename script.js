@@ -1,15 +1,12 @@
-// ======= EsToDoList =======
-// CRUD Básico de Tarefas
-// Objetivo: Aprender JavaScript com exemplos básicos
-// ============
+// =============================================================
+// ======= EsToDoList - Versão Refatorada para Estado =======
+// Objetivo: Garantir que as ações (CRUD) respeitem o filtro/pesquisa ativo.
+// Padrão: Chamada de 'filtrarTarefas' após modificação de dados.
+// =============================================================
 
 // 1 - Selecionar os elementos da página
 const campoNovaTarefa = document.getElementById('nova-tarefa-input')
-console.log(campoNovaTarefa)
-
 const botaoAdicionar = document.getElementById('adicionar-btn')
-console.log(botaoAdicionar)
-
 const listaTarefas = document.getElementById('lista-de-tarefas')
 const campoPesquisa = document.getElementById('pesquisa-input')
 const seletorFiltro = document.getElementById('filtro-select')
@@ -17,47 +14,58 @@ const seletorFiltro = document.getElementById('filtro-select')
 // Array principal que armazenará todas as tarefas
 let tarefas = []
 
+// -------------------------------
 // 2 - Função para carregar tarefas salvas no navegador (localStorage)
+// -------------------------------
 function carregarTarefasSalvas(){
     const tarefasSalvas = localStorage.getItem('tarefas')
     if (tarefasSalvas){
         tarefas = JSON.parse(tarefasSalvas) // converte o texto para array/json
-        exibirTarefas(tarefas)
+        // Chamamos 'filtrarTarefas' no lugar de 'exibirTarefas(tarefas)'
+        // para garantir que se o seletor tiver um valor inicial diferente de 'todos', ele funcione.
+        filtrarTarefas() 
     }
 }
 
+// -------------------------------
 // 3 - Função que irá salvar as tarefas no navegador
+// -------------------------------
 function salvarTarefas(){
     localStorage.setItem('tarefas', JSON.stringify(tarefas))
 }
 
+// -------------------------------
 // 4 - Função para adicionar uma nova tarefa
+// -------------------------------
 function adicionarTarefa(){
    let textoTarefa = campoNovaTarefa.value.trim() // remove espaços em branco
 
    if (textoTarefa === ""){
-    alert('Digite uma nova tarefa antes de adicionar!')
-    return
+     alert('Digite uma nova tarefa antes de adicionar!')
+     return
    }
 
    const novaTarefa = {
-    id: Date.now(),
-    texto: textoTarefa,
-    concluida: false
+     id: Date.now(),
+     texto: textoTarefa,
+     concluida: false
    }
 
    // Adicionamos a nova tarefa ao array e salvamos no navegador
    tarefas.push(novaTarefa)
    salvarTarefas()
 
-   // Atualizamos a lista de tarefas
-   exibirTarefas(tarefas)
-
+   // >>> CORREÇÃO/ADAPTAÇÃO: Chamamos filtrarTarefas() para atualizar a lista
+   // respeitando o filtro ativo (ex: se o filtro for 'ativos', ela deve aparecer).
+   filtrarTarefas() 
+   
    // Limpamos o campo de texto/input
    campoNovaTarefa.value =''
 }
 
+// -------------------------------
 // 5 - Função para mostrar as tarefas no navegador
+// -------------------------------
 function exibirTarefas(listaParaMostrar){
     // Limpar as tarefas antes de exibir
     listaTarefas.innerHTML = ''
@@ -66,7 +74,15 @@ function exibirTarefas(listaParaMostrar){
     if (!listaParaMostrar || listaParaMostrar.length === 0) {
         const liVazio = document.createElement('li')
         liVazio.className = 'text-center p-3 text-zinc-600 dark:text-zinc-300'
-        liVazio.textContent = 'Nenhuma tarefa encontrada'
+        
+        // Mensagem mais específica
+        const termoPesquisa = campoPesquisa.value.trim()
+        if (termoPesquisa) {
+            liVazio.textContent = `Nenhuma tarefa corresponde a "${termoPesquisa}"`
+        } else {
+            liVazio.textContent = 'Nenhuma tarefa encontrada'
+        }
+        
         listaTarefas.appendChild(liVazio)
         return
     }
@@ -96,7 +112,8 @@ function exibirTarefas(listaParaMostrar){
             ${tarefa.concluida ? 'line-through text-zinc-500 dark:text-zinc-400' : ''}
         `
 
-        textoTarefa.onclick = () => alternarConclusao(tarefa.id)
+        // Usamos uma função de flecha para garantir o 'this' correto, se necessário, mas aqui o 'id' é capturado
+        textoTarefa.onclick = () => alternarConclusao(tarefa.id) 
 
         // Criar os botões
         const botoes = document.createElement('div')
@@ -139,18 +156,25 @@ function exibirTarefas(listaParaMostrar){
     }
 }
 
+// -------------------------------
 // 6. Função para alternar entre concluída e ativa
+// -------------------------------
 function alternarConclusao(id) {
     for (let tarefa of tarefas){
         if (tarefa.id === id ){
             tarefa.concluida = !tarefa.concluida
+            break // Performance: Sai do loop após encontrar a tarefa
         }
     }
     salvarTarefas()
-    exibirTarefas(tarefas)
+    // >>> CORREÇÃO/ADAPTAÇÃO: Chama filtrarTarefas() para atualizar a lista
+    // (A tarefa marcada como concluída/ativa será removida/adicionada do display se o filtro não for 'todos').
+    filtrarTarefas() 
 }
 
+// -------------------------------
 // 7. Função para editar o texto de uma tarefa
+// -------------------------------
 function editarTarefa(id){
     const novaDescricao = prompt('Edite a tarefa: ')
     if (novaDescricao === null || novaDescricao.trim() === ""){
@@ -159,59 +183,83 @@ function editarTarefa(id){
     for (let tarefa of tarefas){
         if (tarefa.id === id){
             tarefa.texto = novaDescricao.trim()
+            break // Performance: Sai do loop após encontrar a tarefa
         }
     }
 
     salvarTarefas()
-    exibirTarefas(tarefas)
+    // >>> CORREÇÃO/ADAPTAÇÃO: Chama pesquisarTarefas() para atualizar a lista
+    // (Se houver um termo de pesquisa, o texto editado pode mudar a visibilidade).
+    pesquisarTarefas() 
 }
 
+// -------------------------------
 // 8. Função para excluir uma tarefa
+// -------------------------------
 function excluirTarefa(id) {
     const confirmar = window.confirm('Você realmente deseja excluir a tarefa?')
 
     if (confirmar) {
+        // Recria o array principal, removendo a tarefa com o ID fornecido
         tarefas = tarefas.filter(function (tarefa){
             return tarefa.id !== id
         })
         salvarTarefas()
-        exibirTarefas(tarefas)
+        // >>> CORREÇÃO/ADAPTAÇÃO: Chama pesquisarTarefas() para atualizar a lista
+        // (A lista será atualizada mantendo o filtro e a pesquisa ativos).
+        pesquisarTarefas() 
     }
 }
 
 // -------------------------------
-// 9. Função de pesquisa
+// 9. Função de pesquisa (Responsável por aplicar Pesquisa E Filtro de Tipo)
 // -------------------------------
 function pesquisarTarefas() {
-  const termo = campoPesquisa.value.toLowerCase()
-  const filtradas = tarefas.filter(function (tarefa) {
-    return tarefa.texto.toLowerCase().includes(termo)
-  })
-  exibirTarefas(filtradas)
+    const termo = campoPesquisa.value.toLowerCase().trim()
+    
+    // 1. Aplica o filtro de tipo (todos/ativos/concluídos) primeiro
+    const tipo = seletorFiltro.value
+    let filtradas = obterTarefasFiltradasPeloTipo(tipo)
+
+    // 2. Aplica a pesquisa sobre o resultado do filtro de tipo
+    if (termo) {
+        filtradas = filtradas.filter(function (tarefa) {
+            return tarefa.texto.toLowerCase().includes(termo)
+        })
+    }
+    
+    // 3. Exibe o resultado combinado
+    exibirTarefas(filtradas)
 }
 
 // -------------------------------
-// 10. Filtro: todos / ativos / concluídos
+// 10. Função auxiliar para obter tarefas filtradas pelo tipo
+// -------------------------------
+function obterTarefasFiltradasPeloTipo(tipo) {
+    if (tipo === 'todos') {
+        return tarefas
+    } else if (tipo === 'ativos') {
+        return tarefas.filter(tarefa => !tarefa.concluida)
+    } else if (tipo === 'concluidos') {
+        return tarefas.filter(tarefa => tarefa.concluida)
+    }
+    return tarefas // Default
+}
+
+// -------------------------------
+// 10.1 Função principal de filtro (Chamada pelo evento 'change')
 // -------------------------------
 function filtrarTarefas() {
-  const tipo = seletorFiltro.value
-  let filtradas = []
-
-  if (tipo === 'todos') {
-    filtradas = tarefas
-  } else if (tipo === 'ativos') {
-    filtradas = tarefas.filter(tarefa => !tarefa.concluida)
-  } else if (tipo === 'concluidos') {
-    filtradas = tarefas.filter(tarefa => tarefa.concluida)
-  }
-
-  exibirTarefas(filtradas)
+    // >>> Padrão Clean Code: A função de filtro chama a de pesquisa
+    // para garantir que a mudança do filtro de tipo respeite o termo de pesquisa atual.
+    pesquisarTarefas()
 }
 
 // -------------------------------
 // 11. Eventos (interações do usuário)
 // -------------------------------
 botaoAdicionar.addEventListener('click', adicionarTarefa)
+// O evento 'input' e 'change' chama a pesquisa/filtro
 campoPesquisa.addEventListener('input', pesquisarTarefas)
 seletorFiltro.addEventListener('change', filtrarTarefas)
 
@@ -219,10 +267,10 @@ seletorFiltro.addEventListener('change', filtrarTarefas)
 // 12. Permitir adicionar tarefa ao pressionar Enter
 // -------------------------------
 campoNovaTarefa.addEventListener('keydown', function (evento) {
-  // Verifica se a tecla pressionada foi "Enter"
-  if (evento.key === 'Enter') {
-    adicionarTarefa()
-  }
+    // Verifica se a tecla pressionada foi "Enter"
+    if (evento.key === 'Enter') {
+        adicionarTarefa()
+    }
 })
 
 // -------------------------------
