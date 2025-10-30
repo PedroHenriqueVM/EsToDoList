@@ -62,52 +62,81 @@ function exibirTarefas(listaParaMostrar){
     // Limpar as tarefas antes de exibir
     listaTarefas.innerHTML = ''
 
+    // Se não houver tarefas, mostra mensagem
+    if (!listaParaMostrar || listaParaMostrar.length === 0) {
+        const liVazio = document.createElement('li')
+        liVazio.className = 'text-center p-3 text-zinc-600 dark:text-zinc-300'
+        liVazio.textContent = 'Nenhuma tarefa encontrada'
+        listaTarefas.appendChild(liVazio)
+        return
+    }
+
     // Estrutura de repetição para adicionar novas tarefas
     for (let tarefa of listaParaMostrar){
 
         // Criar um <li> para cada tarefa
         const item = document.createElement('li')
-        item.className = 'flex justify-between items-center p-3 border rounded-lg shadow-sm bg-gray-50 dark:bg-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-600 transition text-zinc-900 dark:text-zinc-100'
-
-        // Adicionamos a classe 'concluida' se tiver marcada
-        if (tarefa.concluida) {
-            item.classList.add('concluida')
-        }
+        item.className = `
+            flex justify-between items-center p-3 
+            border rounded-lg shadow-sm 
+            bg-white dark:bg-zinc-700 
+            hover:bg-gray-100 dark:hover:bg-zinc-600 
+            transition duration-150
+            ${tarefa.concluida ? 'opacity-75' : ''}
+        `
 
         // Criar um span para o texto da tarefa
         const textoTarefa = document.createElement('span')
         textoTarefa.textContent = tarefa.texto
-        textoTarefa.className = 'tarefa-texto flex-grow cursor-pointer'
-        textoTarefa.onclick = function () {
-            alternarConclusao(tarefa.id)
-        }
+        
+        // Define classes base e condicionais para o texto
+        textoTarefa.className = `
+            flex-grow cursor-pointer select-none
+            text-zinc-900 dark:text-zinc-100
+            ${tarefa.concluida ? 'line-through text-zinc-500 dark:text-zinc-400' : ''}
+        `
 
-        // Criar os botões de editar e excluir
+        textoTarefa.onclick = () => alternarConclusao(tarefa.id)
+
+        // Criar os botões
         const botoes = document.createElement('div')
         botoes.className = 'flex space-x-2'
 
         const botaoEditar = document.createElement('button')
-        botaoEditar.className = 'px-2 py-1 bg-yellow-400 hover:bg-yellow-500 text-white rounded'
-        botaoEditar.textContent = '✏'
-        botaoEditar.onclick = function () {
+        botaoEditar.className = 'p-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition duration-150'
+        botaoEditar.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" 
+                stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" 
+                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/>
+            </svg>
+        `
+        botaoEditar.onclick = (ev) => {
+            ev.stopPropagation()
             editarTarefa(tarefa.id)
         }
 
         const botaoExcluir = document.createElement('button')
-        botaoExcluir.className = 'px-2 py-1 bg-red-400 hover:bg-red-500 text-white rounded'
-        botaoExcluir.textContent = '🗑'
-        botaoExcluir.onclick = function () {
+        botaoExcluir.className = 'p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition duration-150'
+        botaoExcluir.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" 
+                stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" 
+                    d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+            </svg>
+        `
+        botaoExcluir.onclick = (ev) => {
+            ev.stopPropagation()
             excluirTarefa(tarefa.id)
         }
 
-        // Montagem do elemento de tarefa
+        // Montagem do elemento
         botoes.appendChild(botaoEditar)
         botoes.appendChild(botaoExcluir)
         item.appendChild(textoTarefa)
         item.appendChild(botoes)
         listaTarefas.appendChild(item)
     }
-
 }
 
 // 6. Função para alternar entre concluída e ativa
