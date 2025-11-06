@@ -44,7 +44,7 @@ Para visualizar ou rodar o **EsToDoList** em sua máquina, siga os passos abaixo
 
 1.  **Clone o Repositório:**
     ```bash
-    git clone [LINK DO SEU REPOSITÓRIO]
+    git clone https://github.com/PedroHenriqueVM/EsToDoList.git
     ```
 
 2.  **Acesse a Pasta do Projeto:**
