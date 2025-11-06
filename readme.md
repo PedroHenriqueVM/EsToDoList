@@ -57,6 +57,13 @@ Para visualizar ou rodar o **EsToDoList** em sua máquina, siga os passos abaixo
 
 > **Nota:** Todos os dados são salvos localmente em seu navegador. Se você limpar o cache ou usar um modo de navegação privada, os dados serão perdidos.
 
+## Ou você pode acessar o **EsToDoList** através do link:
+
+1. **Abra o seu navegador de preferência**
+
+2. **Cole o seguinte link no seu navegador para visualizar o projeto:**
+https://es-to-do-list-mauve.vercel.app/
+
 ---
 
 <p align="center">Desenvolvido com foco em Clean Code e prática Front-end.</p>
